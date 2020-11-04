@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "601104449210",
+    "firebase_url": "https://socialmediaintegration-748cb.firebaseio.com",
+    "project_id": "socialmediaintegration-748cb",
+    "storage_bucket": "socialmediaintegration-748cb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:601104449210:android:0134d3f97639fdd5d08c83",
+        "android_client_info": {
+          "package_name": "com.example.socialmediaintegration"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "601104449210-qdopdkqn9n59nitun3d6crne2lh7t2tq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkePvy9dQMjsggFLoCIbfpHTW7LgWL2RI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "601104449210-qdopdkqn9n59nitun3d6crne2lh7t2tq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
