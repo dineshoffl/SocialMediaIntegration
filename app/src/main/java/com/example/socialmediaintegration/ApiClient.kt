@@ -8,21 +8,17 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
 
-
-    var retrofit: Retrofit? = null
-
-    open fun getClient(): Retrofit? {
+    open fun getClient(): Retrofit {
         val httpClient = OkHttpClient.Builder()
         if (BuildConfig.DEBUG){
             val interceptor = HttpLoggingInterceptor()
             interceptor.level = HttpLoggingInterceptor.Level.BODY
             httpClient.addInterceptor(interceptor)
         }
-        retrofit = Retrofit.Builder()
+        return  Retrofit.Builder()
             .baseUrl("http://api.openweathermap.org/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClient.build())
             .build()
-        return retrofit
     }
 }
