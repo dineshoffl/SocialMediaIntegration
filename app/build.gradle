@@ -57,5 +57,13 @@ dependencies {
     implementation 'com.twitter.sdk.android:twitter-core:3.3.0'
     implementation 'com.twitter.sdk.android:twitter:3.3.0'
 
+    implementation ('com.squareup.retrofit2:retrofit:2.1.0') {
+        // exclude Retrofit’s OkHttp dependency module and define your own module import
+        exclude module: 'okhttp'
+    }
+    implementation 'com.google.code.gson:gson:2.6.2'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+
 }
 apply plugin: 'com.google.gms.google-services'

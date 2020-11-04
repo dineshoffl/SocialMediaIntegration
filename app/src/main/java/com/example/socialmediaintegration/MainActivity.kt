@@ -3,9 +3,9 @@ package com.example.socialmediaintegration
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -17,15 +17,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.*
+import com.google.firebase.auth.FacebookAuthProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.TwitterAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import com.twitter.sdk.android.core.*
 import com.twitter.sdk.android.core.identity.TwitterAuthClient
 import kotlinx.android.synthetic.main.activity_main.*
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Response
+import retrofit2.Retrofit
 import java.util.*
 
 
@@ -40,9 +44,12 @@ class MainActivity : AppCompatActivity() {
 
     var client: TwitterAuthClient? = null
 
+    var apiInterface: ApiInterface? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        apiInterface = ApiClient.getClient()?.create(ApiInterface::class.java)
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -56,6 +63,20 @@ class MainActivity : AppCompatActivity() {
         callbackManager = CallbackManager.Factory.create()
         configTwitter()
         setOnClickListener()
+        getWeatherReport()
+    }
+
+    private fun getWeatherReport(){
+        val call : Call<ResponseBody>? = apiInterface?.getWeatherReport("London","e87ac04dced38a378463c1c2f566eba3")
+        call?.enqueue(object : retrofit2.Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+               Log.d("apiResponse","response"+response.body().toString())
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                Log.d("apiResponse",""+t.message)
+            }
+        })
     }
 
     private fun setOnClickListener() {
@@ -129,7 +150,8 @@ class MainActivity : AppCompatActivity() {
                 this
             ) { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Twitter sign in successfully", Toast.LENGTH_SHORT).show()
+                    val user = auth.currentUser
+                    Toast.makeText(this, "Twitter sign in successfully"+user?.displayName, Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Twitter sign in failed", Toast.LENGTH_SHORT).show()
                 }
@@ -142,7 +164,8 @@ class MainActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    Toast.makeText(this, "FB sign in successfully", Toast.LENGTH_SHORT).show()
+                    val user = auth.currentUser
+                    Toast.makeText(this, "FB sign in successfully"+user?.displayName, Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Fb sign in failed", Toast.LENGTH_SHORT).show()
                 }
@@ -156,7 +179,8 @@ class MainActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Google sign in successfully", Toast.LENGTH_SHORT).show()
+                    val user = auth.currentUser
+                    Toast.makeText(this, "Google sign in successfully"+user?.displayName, Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Google sign in failed", Toast.LENGTH_SHORT).show()
                 }
