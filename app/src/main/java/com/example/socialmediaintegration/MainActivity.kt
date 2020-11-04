@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getWeatherReport(){
-        val call : Call<ResponseBody>? = apiInterface?.getWeatherReport("London","e87ac04dced38a378463c1c2f566eba3")
+        val call : Call<ResponseBody>? = apiInterface?.getWeatherReport()
         call?.enqueue(object : retrofit2.Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                Log.d("apiResponse","response"+response.body().toString())

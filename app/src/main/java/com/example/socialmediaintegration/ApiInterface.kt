@@ -9,5 +9,5 @@ import retrofit2.http.Query
 interface ApiInterface {
 
     @GET("/data/2.5/weather")
-    fun getWeatherReport(@Query("q")cityName : String, @Query("appid")apiKey : String): Call<ResponseBody>
+    fun getWeatherReport(): Call<ResponseBody>
 }
