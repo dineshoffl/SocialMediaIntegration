@@ -1,12 +1,11 @@
 package com.example.socialmediaintegration.Activity
 
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.example.socialmediaintegration.R
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
@@ -27,12 +26,16 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.twitter.sdk.android.core.*
 import com.twitter.sdk.android.core.identity.TwitterAuthClient
+import dagger.android.AndroidInjection
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasActivityInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import okhttp3.ResponseBody
 import java.util.*
 import javax.inject.Inject
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), HasActivityInjector, MainScreenContract.View {
 
 
     private lateinit var auth: FirebaseAuth
@@ -44,16 +47,17 @@ class MainActivity : AppCompatActivity() {
     var client: TwitterAuthClient? = null
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    var activityAndroidInjector: DispatchingAndroidInjector<Activity>? = null
 
-    lateinit var weatherViewModel: WeatherViewModel
+    @Inject
+    var presenter: MainScreenPresenter? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AppInjector.apnaAppComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        weatherViewModel =
-            ViewModelProviders.of(this, viewModelFactory).get(WeatherViewModel::class.java)
+        AndroidInjection.inject(this)
+
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -67,13 +71,9 @@ class MainActivity : AppCompatActivity() {
         callbackManager = CallbackManager.Factory.create()
         configTwitter()
         setOnClickListener()
+        presenter?.onAttach(this)
+        presenter?.getTabData()
 
-        weatherViewModel.getWeatherReport.observe(this, androidx.lifecycle.Observer {
-            if (it.data != null) {
-                Toast.makeText(this, "Data fetched", Toast.LENGTH_LONG).show()
-            }
-        })
-        weatherViewModel.initWeatherReport(true)
 
     }
 
@@ -241,5 +241,30 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "GoogleActivity"
         private const val RC_SIGN_IN = 9001
+    }
+
+
+    override fun activityInjector(): DispatchingAndroidInjector<Activity>? {
+        return activityAndroidInjector
+    }
+
+    override fun showError(message: String) {
+
+    }
+
+    override fun showError(errorMessageId: Int) {
+
+    }
+
+    override fun noTabDataFound() {
+
+    }
+
+    override fun setData(tabDataList: ResponseBody) {
+        Toast.makeText(this, "Data recieved", Toast.LENGTH_SHORT).show();
+    }
+
+    override fun showProgress(showProgress: Boolean) {
+
     }
 }
