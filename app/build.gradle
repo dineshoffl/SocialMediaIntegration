@@ -2,7 +2,10 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
 }
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 29
 
@@ -29,7 +32,13 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    android {
+        compileOptions.incremental = false
+    }
+
 }
+def rxJavaVersion = '2.0.1'
+def daggerVersion = '2.25.2'
 
 dependencies {
 
@@ -57,13 +66,27 @@ dependencies {
     implementation 'com.twitter.sdk.android:twitter-core:3.3.0'
     implementation 'com.twitter.sdk.android:twitter:3.3.0'
 
-    implementation ('com.squareup.retrofit2:retrofit:2.1.0') {
-        // exclude Retrofit’s OkHttp dependency module and define your own module import
-        exclude module: 'okhttp'
-    }
-    implementation 'com.google.code.gson:gson:2.6.2'
-    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+
+
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+
+    api 'com.squareup.retrofit2:retrofit:2.6.2'
+    api 'com.squareup.retrofit2:converter-gson:2.6.2'
+    api 'com.squareup.okhttp3:logging-interceptor:4.2.1'
+    api 'com.google.code.gson:gson:2.8.6'
+
+    implementation "io.reactivex.rxjava2:rxandroid:$rxJavaVersion"
+    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+
+    //added
+    //dagger
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.1'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.1"
+    
 
 }
 apply plugin: 'com.google.gms.google-services'

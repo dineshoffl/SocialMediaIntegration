@@ -1,11 +1,13 @@
-package com.example.socialmediaintegration
+package com.example.socialmediaintegration.Activity
 
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import com.example.socialmediaintegration.R
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -26,11 +28,8 @@ import com.google.firebase.ktx.Firebase
 import com.twitter.sdk.android.core.*
 import com.twitter.sdk.android.core.identity.TwitterAuthClient
 import kotlinx.android.synthetic.main.activity_main.*
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Response
-import retrofit2.Retrofit
 import java.util.*
+import javax.inject.Inject
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,12 +43,17 @@ class MainActivity : AppCompatActivity() {
 
     var client: TwitterAuthClient? = null
 
-    var apiInterface: ApiInterface? = null
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    lateinit var weatherViewModel: WeatherViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppInjector.apnaAppComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        apiInterface = ApiClient.getClient().create(ApiInterface::class.java)
+        weatherViewModel =
+            ViewModelProviders.of(this, viewModelFactory).get(WeatherViewModel::class.java)
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -63,21 +67,37 @@ class MainActivity : AppCompatActivity() {
         callbackManager = CallbackManager.Factory.create()
         configTwitter()
         setOnClickListener()
-        getWeatherReport()
-    }
 
-    private fun getWeatherReport(){
-        val call : Call<ResponseBody>? = apiInterface?.getWeatherReport()
-        call?.enqueue(object : retrofit2.Callback<ResponseBody?> {
-            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
-               Log.d("apiResponse","response"+response.body().toString())
-            }
-
-            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                Log.d("apiResponse",""+t.message)
+        weatherViewModel.getWeatherReport.observe(this, androidx.lifecycle.Observer {
+            if (it.data != null) {
+                Toast.makeText(this, "Data fetched", Toast.LENGTH_LONG).show()
             }
         })
+        weatherViewModel.initWeatherReport(true)
+
     }
+
+//    private fun observableViewModel() {
+//        viewModel.getRepos()?.observe(this, androidx.lifecycle.Observer {
+//            if (it != null){
+//                Toast.makeText(this,"Api called successfully",Toast.LENGTH_SHORT).show()
+//            }
+//        })
+//
+//    }
+
+//    private fun getWeatherReport() {
+//        val call: Call<ResponseBody>? = apiInterface?.getWeatherReport()
+//        call?.enqueue(object : retrofit2.Callback<ResponseBody?> {
+//            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+//                Log.d("apiResponse", "response" + response.body().toString())
+//            }
+//
+//            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+//                Log.d("apiResponse", "" + t.message)
+//            }
+//        })
+//    }
 
     private fun setOnClickListener() {
         btn_google_login.setOnClickListener {
@@ -136,7 +156,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun signIn() {
         val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
+        startActivityForResult(
+            signInIntent,
+            RC_SIGN_IN
+        )
     }
 
     private fun handleTwitterSession(session: TwitterSession) {
@@ -151,7 +174,11 @@ class MainActivity : AppCompatActivity() {
             ) { task ->
                 if (task.isSuccessful) {
                     val user = auth.currentUser
-                    Toast.makeText(this, "Twitter sign in successfully"+user?.displayName, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        "Twitter sign in successfully" + user?.displayName,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
                     Toast.makeText(this, "Twitter sign in failed", Toast.LENGTH_SHORT).show()
                 }
@@ -165,7 +192,11 @@ class MainActivity : AppCompatActivity() {
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     val user = auth.currentUser
-                    Toast.makeText(this, "FB sign in successfully"+user?.displayName, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        "FB sign in successfully" + user?.displayName,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
                     Toast.makeText(this, "Fb sign in failed", Toast.LENGTH_SHORT).show()
                 }
@@ -180,7 +211,11 @@ class MainActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     val user = auth.currentUser
-                    Toast.makeText(this, "Google sign in successfully"+user?.displayName, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        "Google sign in successfully" + user?.displayName,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
                     Toast.makeText(this, "Google sign in failed", Toast.LENGTH_SHORT).show()
                 }
