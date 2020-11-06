@@ -47,16 +47,16 @@ class MainActivity : AppCompatActivity(), HasActivityInjector, MainScreenContrac
     var client: TwitterAuthClient? = null
 
     @Inject
-    var activityAndroidInjector: DispatchingAndroidInjector<Activity>? = null
+    lateinit var activityAndroidInjector: DispatchingAndroidInjector<Activity>
 
     @Inject
-    var presenter: MainScreenPresenter? = null
+    lateinit var presenter: MainScreenPresenter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         AndroidInjection.inject(this)
+        setContentView(R.layout.activity_main)
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))

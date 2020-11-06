@@ -2,20 +2,15 @@ package com.example.socialmediaintegration.util
 
 import android.app.Activity
 import android.app.Application
-import androidx.fragment.app.Fragment
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
-import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
 
-class StartApplication : Application(), HasActivityInjector, HasSupportFragmentInjector {
+class StartApplication : Application(), HasActivityInjector {
 
     @Inject
-    var mAndroidInjector: DispatchingAndroidInjector<Activity>? = null
-
-    @Inject
-    var mFragmentInjector: DispatchingAndroidInjector<Fragment>? = null
+    lateinit var mAndroidInjector: DispatchingAndroidInjector<Activity>
 
 
     override fun onCreate() {
@@ -28,7 +23,4 @@ class StartApplication : Application(), HasActivityInjector, HasSupportFragmentI
         return mAndroidInjector
     }
 
-    override fun supportFragmentInjector(): AndroidInjector<Fragment?>? {
-        return mFragmentInjector
-    }
 }

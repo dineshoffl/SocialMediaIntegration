@@ -13,9 +13,6 @@ import dagger.Module;
 import dagger.android.AndroidInjectionModule;
 import dagger.android.ContributesAndroidInjector;
 
-/*
- * App module used to inject fragments, services and activities.
- */
 @Module(includes = {AndroidInjectionModule.class, RepositoryModule.class, PresenterModule.class})
 abstract class AppModule {
 
